@@ -11830,7 +11830,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Função para fazer a atualização dos parâmetros no Gradiente Descendente:<p>$w_j = -2\sum_{i=1}^N h_j(x^i)(y^i-h(x^i)^TW)$</p>
+<p>Função para fazer a atualização dos parâmetros no Gradiente Descendente:<p>$w_j = -2\sum_{i=1}^N h_j(x^i)(y^i-h(x^i)W)$</p>
 
 </div>
 </div>
@@ -11841,15 +11841,12 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">step_gradient_vectorized</span><span class="p">(</span><span class="n">w_current</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">learningRate</span><span class="p">):</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">H</span><span class="p">,</span><span class="n">w_current</span><span class="p">)</span>
-    <span class="n">new_grad</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">H</span><span class="p">[:,</span><span class="n">i</span><span class="p">][:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-        <span class="n">new_grad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="n">X</span><span class="p">)))</span>
-    <span class="n">new_w</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">w_current</span><span class="p">)):</span>
-        <span class="n">new_w</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w_current</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">learningRate</span> <span class="o">*</span> <span class="n">new_grad</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_w</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_grad</span><span class="p">)]</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">H</span><span class="p">,</span><span class="n">w_current</span><span class="p">)</span> <span class="c1">#calculando resíduo</span>
+    <span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="n">H</span><span class="p">)</span> <span class="c1">#res * atributos -h(x_i)</span>
+    <span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">gradient</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">new_w</span> <span class="o">=</span> <span class="n">w_current</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">learningRate</span> <span class="o">*</span> <span class="n">gradient</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">new_w</span><span class="p">,</span> <span class="n">gradient</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -11939,7 +11936,7 @@ w3 = [0.16409463]
 w4 = [0.38126109]
 w5 = [0.02029819]
 error = [[0.41133761]]
-Versão vetorizada rodou em: 299987.923145 ms
+Versão vetorizada rodou em: 78636.5709305 ms
 </pre>
 </div>
 </div>
